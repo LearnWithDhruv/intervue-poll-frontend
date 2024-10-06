@@ -5,7 +5,9 @@ import ChatPopover from "../../components/chat/ChatPopover";
 import { useNavigate } from "react-router-dom";
 import eyeIcon from "../../assets/eye.svg";
 let apiUrl =
-  process.env.NODE_ENV === "production" ? "produrl" : "http://localhost:3000";
+  import.meta.env.VITE_NODE_ENV === "production"
+    ? import.meta.env.VITE_API_BASE_URL
+    : "http://localhost:3000";
 const socket = io(apiUrl);
 
 const TeacherPollPage = () => {
@@ -46,10 +48,10 @@ const TeacherPollPage = () => {
   return (
     <>
       <button
-        className="btn rounded-pill poll-history px-4 m-2"
+        className="btn rounded-pill ask-question poll-history px-4 m-2"
         onClick={handleViewPollHistory}
       >
-        <img src={eyeIcon} alt="" srcset="" />
+        <img src={eyeIcon} alt=""/>
         View Poll history
       </button>
       <br />

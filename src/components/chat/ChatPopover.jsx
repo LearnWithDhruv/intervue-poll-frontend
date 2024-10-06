@@ -6,13 +6,13 @@ import "./Chat.css";
 import chatIcon from "../../assets/chat.svg";
 
 let apiUrl =
-  process.env.NODE_ENV === "production"
-    ? "produrl"
+  import.meta.env.VITE_NODE_ENV === "production"
+    ? import.meta.env.VITE_API_BASE_URL
     : "http://localhost:3000";
 const socket = io(apiUrl);
 
 const ChatPopover = () => {
-  const [messages, setMessages] = useState([]); 
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [participants, setParticipants] = useState([]);
   const chatWindowRef = useRef(null);
@@ -20,7 +20,7 @@ const ChatPopover = () => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
-    const username = sessionStorage.getItem("username"); 
+    const username = sessionStorage.getItem("username");
     socket.emit("joinChat", { username });
 
     socket.on("chatMessage", (message) => {
@@ -44,7 +44,6 @@ const ChatPopover = () => {
     }
   };
   const handleKickOut = (participant, index) => {
-    console.log({ participant, index });
     socket.emit("kickOut", participant);
   };
 
@@ -57,7 +56,7 @@ const ChatPopover = () => {
           <thead>
             <tr>
               <th>Name</th>
-              {username === "teacher" ? <th>Actions</th> : null}
+              {username.startsWith("teacher") ? <th>Actions</th> : null}
             </tr>
           </thead>
           <tbody>

@@ -7,8 +7,8 @@ import ChatPopover from "../../components/chat/ChatPopover";
 import { useNavigate } from "react-router-dom";
 import stars from "../../assets/spark.svg";
 let apiUrl =
-  process.env.NODE_ENV === "production"
-    ? "produrl"
+  import.meta.env.VITE_NODE_ENV === "production"
+    ? import.meta.env.VITE_API_BASE_URL
     : "http://localhost:3000";
 const socket = io(apiUrl);
 
@@ -62,13 +62,12 @@ const StudentPollPage = () => {
 
   useEffect(() => {
     socket.on("pollCreated", (pollData) => {
-      console.log(pollData);
       setPollQuestion(pollData.question);
       setPollOptions(pollData.options);
       setVotes({});
       setSubmitted(false);
       setSelectedOption(null);
-      setTimeLeft(3000);
+      setTimeLeft(pollData.timer);
       setPollId(pollData._id);
     });
 
@@ -221,12 +220,14 @@ const StudentPollPage = () => {
 
               {!submitted && selectedOption && timeLeft > 0 && (
                 <div className="d-flex  justify-content-end align-items-center">
-
-                    <button type="submit" className="btn continue-btn my-3 w-25" onClick={handleSubmit}>
-            Submit
-          </button>          
+                  <button
+                    type="submit"
+                    className="btn continue-btn my-3 w-25"
+                    onClick={handleSubmit}
+                  >
+                    Submit
+                  </button>
                 </div>
-
               )}
 
               {submitted && (

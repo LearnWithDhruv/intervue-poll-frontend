@@ -4,8 +4,8 @@ import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 let apiUrl =
-  process.env.NODE_ENV === "production"
-    ? "produrl"
+  import.meta.env.VITE_NODE_ENV === "production"
+    ? import.meta.env.VITE_API_BASE_URL
     : "http://localhost:3000";
 const LoginPage = () => {
   const [selectedRole, setSelectedRole] = useState(null);
@@ -16,9 +16,7 @@ const LoginPage = () => {
 
   const continueToPoll = async () => {
     if (selectedRole === "teacher") {
-      let teacherlogin = await axios.post(
-         `${apiUrl}/teacher-login`
-      );
+      let teacherlogin = await axios.post(`${apiUrl}/teacher-login`);
       console.log(teacherlogin);
       sessionStorage.setItem("username", teacherlogin.data.username);
       navigate("/teacher-home-page");

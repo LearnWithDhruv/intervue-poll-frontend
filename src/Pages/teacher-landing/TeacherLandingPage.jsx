@@ -3,19 +3,19 @@ import stars from "../../assets/spark.svg";
 import "./TeacherLandingPage.css";
 import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
-import eyeIcon from  "../../assets/eye.svg";
+import eyeIcon from "../../assets/eye.svg";
 let apiUrl =
-  process.env.NODE_ENV === "production"
-    ? "produrl"
+  import.meta.env.VITE_NODE_ENV === "production"
+    ? import.meta.env.VITE_API_BASE_URL
     : "http://localhost:3000";
-const socket  = io(apiUrl);
+const socket = io(apiUrl);
 const TeacherLandingPage = () => {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState([{ id: 1, text: "", correct: null }]);
   const [timer, setTimer] = useState("60");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const username =sessionStorage.getItem("username")
+  const username = sessionStorage.getItem("username");
   const handleQuestionChange = (e) => {
     setQuestion(e.target.value);
   };
@@ -75,25 +75,24 @@ const TeacherLandingPage = () => {
   const askQuestion = () => {
     if (validateForm()) {
       let teacherUsername = sessionStorage.getItem("username");
-      console.log({ question, options, timer });
       let pollData = { question, options, timer, teacherUsername };
       socket.emit("createPoll", pollData);
       navigate("/teacher-poll");
     }
   };
-  const handleViewPollHistory=()=>{
+  const handleViewPollHistory = () => {
     navigate("/teacher-poll-history");
-  }
+  };
 
   return (
     <>
-        <button
-          className="btn rounded-pill ask-question px-4 m-2"
-          onClick={handleViewPollHistory}
-        >
-          <img src={eyeIcon} alt="" srcset="" />
-          View Poll history
-        </button>
+      <button
+        className="btn rounded-pill ask-question px-4 m-2"
+        onClick={handleViewPollHistory}
+      >
+        <img src={eyeIcon} alt="" srcset="" />
+        View Poll history
+      </button>
       <div className="container my-4 w-75 ms-5">
         <button className="btn btn-sm intervue-btn mb-3">
           <img src={stars} alt="Poll Icon" /> Intervue Poll
@@ -102,7 +101,10 @@ const TeacherLandingPage = () => {
         <h2 className="fw-bold">
           Let's <strong>Get Started</strong>
         </h2>
-        <p><b>Teacher: </b>{username}</p>
+        <p>
+          <b>Teacher: </b>
+          {username}
+        </p>
         <p className="text-muted">
           You'll have the ability to create and manage polls, ask questions, and
           monitor your students' responses in real-time.
@@ -126,7 +128,7 @@ const TeacherLandingPage = () => {
             </select>
           </div>
           <input
-          type="text"
+            type="text"
             id="question"
             className="form-control"
             onChange={handleQuestionChange}

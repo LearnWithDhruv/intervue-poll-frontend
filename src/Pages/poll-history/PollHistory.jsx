@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import backIcon from "../../assets/back.svg";
 let apiUrl =
-  process.env.NODE_ENV === "production"
-    ? "produrl"
+  import.meta.env.VITE_NODE_ENV === "production"
+    ? import.meta.env.VITE_API_BASE_URL
     : "http://localhost:3000";
 const socket = io(apiUrl);
 
@@ -15,13 +15,10 @@ const PollHistoryPage = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const getPolls = async () => {
-        const username = sessionStorage.getItem("username");
+      const username = sessionStorage.getItem("username");
 
       try {
-        const response = await axios.get(
-          `${apiUrl}/polls/${username}`
-        );
-        console.log(response.data);
+        const response = await axios.get(`${apiUrl}/polls/${username}`);
         setPolls(response.data.data);
       } catch (error) {
         console.error("Error fetching polls:", error);
