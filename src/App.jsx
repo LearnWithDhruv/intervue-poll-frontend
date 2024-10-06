@@ -5,7 +5,8 @@ import StudentLandingPage from "./Pages/student-landing/StudentLandingPage";
 import StudentPollPage from "./Pages/student-poll/StudentPollPage";
 import TeacherPollPage from "./Pages/teacher-poll/TeacherPollPage";
 import PollHistoryPage from "./Pages/poll-history/PollHistory";
-import { StudentProtectedRoute, TeacherProtectedRoute } from "./components/route-protect/protect";
+import TeacherProtectedRoute from "./components/route-protect/TeacherProtect";
+import StudentProtectedRoute from "./components/route-protect/StudentProtect";
 
 function App() {
   return (
@@ -20,12 +21,7 @@ function App() {
             </TeacherProtectedRoute>
           }
         />
-        <Route
-          path="/student-home-page"
-          element={
-              <StudentLandingPage />
-          }
-        />
+        <Route path="/student-home-page" element={<StudentLandingPage />} />
 
         <Route
           path="/poll-question"
