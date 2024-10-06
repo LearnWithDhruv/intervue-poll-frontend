@@ -90,7 +90,7 @@ const TeacherLandingPage = () => {
         className="btn rounded-pill ask-question px-4 m-2"
         onClick={handleViewPollHistory}
       >
-        <img src={eyeIcon} alt="" srcset="" />
+        <img src={eyeIcon} alt="" />
         View Poll history
       </button>
       <div className="container my-4 w-75 ms-5">

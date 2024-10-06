@@ -17,7 +17,6 @@ const LoginPage = () => {
   const continueToPoll = async () => {
     if (selectedRole === "teacher") {
       let teacherlogin = await axios.post(`${apiUrl}/teacher-login`);
-      console.log(teacherlogin);
       sessionStorage.setItem("username", teacherlogin.data.username);
       navigate("/teacher-home-page");
     } else if (selectedRole === "student") {
@@ -31,7 +30,7 @@ const LoginPage = () => {
     <div className="d-flex justify-content-center align-items-center vh-100">
       <div className="poll-container text-center">
         <button className="btn btn-sm intervue-btn mb-5">
-          <img src={stars} className="px-1" alt="" srcset="" />
+          <img src={stars} className="px-1" alt="" />
           Intervue Poll
         </button>
         <h3 className="poll-title">
