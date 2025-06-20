@@ -3,8 +3,9 @@ import { Navigate } from "react-router-dom";
 
 const TeacherProtectedRoute = ({ children }) => {
   const username = sessionStorage.getItem("username");
-
-  if (!username || !username.startsWith("teacher")) {
+  
+  // Check if username exists and starts with "teacher_"
+  if (!username || !username.startsWith("teacher_")) {
     return <Navigate to="/" replace />;
   }
 
