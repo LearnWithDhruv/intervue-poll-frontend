@@ -3,26 +3,46 @@ import stars from "../../assets/spark.svg";
 import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-let apiUrl =
-  import.meta.env.VITE_NODE_ENV === "production"
-    ? import.meta.env.VITE_API_BASE_URL
-    : "http://localhost:3000";
+
+let apiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const LoginPage = () => {
   const [selectedRole, setSelectedRole] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+
   const selectRole = (role) => {
     setSelectedRole(role);
+    setError("");
   };
 
   const continueToPoll = async () => {
-    if (selectedRole === "teacher") {
-      let teacherlogin = await axios.post(`${apiUrl}/teacher-login`);
-      sessionStorage.setItem("username", teacherlogin.data.username);
-      navigate("/teacher-home-page");
-    } else if (selectedRole === "student") {
-      navigate("/student-home-page");
-    } else {
-      alert("Please select a role.");
+    if (!selectedRole) {
+      setError("Please select a role.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      if (selectedRole === "teacher") {
+        const response = await axios.post(`${apiUrl}/teacher-login`);
+        if (response.data && response.data.username) {
+          sessionStorage.setItem("username", response.data.username);
+          navigate("/teacher-home-page");
+        } else {
+          throw new Error("Invalid response from server");
+        }
+      } else if (selectedRole === "student") {
+        navigate("/student-home-page");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Failed to login. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -41,6 +61,8 @@ const LoginPage = () => {
           polling system
         </p>
 
+        {error && <div className="alert alert-danger mb-3">{error}</div>}
+
         <div className="d-flex justify-content-around mb-4">
           <div
             className={`role-btn ${selectedRole === "student" ? "active" : ""}`}
@@ -48,8 +70,7 @@ const LoginPage = () => {
           >
             <p>I'm a Student</p>
             <span>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry
+              Submit answers and view live poll results in real-time.
             </span>
           </div>
           <div
@@ -57,12 +78,23 @@ const LoginPage = () => {
             onClick={() => selectRole("teacher")}
           >
             <p>I'm a Teacher</p>
-            <span>Submit answers and view live poll results in real-time.</span>
+            <span>Create polls and view live results from students.</span>
           </div>
         </div>
 
-        <button className="btn continue-btn" onClick={continueToPoll}>
-          Continue
+        <button 
+          className="btn continue-btn" 
+          onClick={continueToPoll}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Loading...
+            </>
+          ) : (
+            "Continue"
+          )}
         </button>
       </div>
     </div>
