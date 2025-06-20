@@ -4,11 +4,13 @@ import "./TeacherLandingPage.css";
 import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import eyeIcon from "../../assets/eye.svg";
+
 let apiUrl =
   import.meta.env.VITE_NODE_ENV === "production"
     ? import.meta.env.VITE_API_BASE_URL
     : "http://localhost:3000";
 const socket = io(apiUrl);
+
 const TeacherLandingPage = () => {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState([{ id: 1, text: "", correct: null }]);
@@ -16,6 +18,12 @@ const TeacherLandingPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const username = sessionStorage.getItem("username");
+
+  if (!username) {
+    navigate("/");
+    return null;
+  }
+
   const handleQuestionChange = (e) => {
     setQuestion(e.target.value);
   };
@@ -72,20 +80,32 @@ const TeacherLandingPage = () => {
     return true;
   };
 
-  const askQuestion = () => {
-    if (validateForm()) {
-      let teacherUsername = sessionStorage.getItem("username");
-      let pollData = { question, options, timer, teacherUsername };
-      socket.emit("createPoll", pollData);
-      navigate("/teacher-poll");
-    }
-  };
+  // Add this to your askQuestion function
+const askQuestion = () => {
+  if (validateForm()) {
+    const teacherUsername = sessionStorage.getItem("username");
+    const pollData = { 
+      question, 
+      options: options.map(opt => ({
+        text: opt.text,
+        correct: opt.correct
+      })),
+      timer,
+      teacherUsername 
+    };
+    
+    console.log('Emitting createPoll:', pollData); // Debug log
+    socket.emit("createPoll", pollData);
+    navigate("/teacher-poll");
+  }
+};
+
   const handleViewPollHistory = () => {
     navigate("/teacher-poll-history");
   };
 
   return (
-    <>
+    <div className="teacher-landing-container">
       <button
         className="btn rounded-pill ask-question px-4 m-2"
         onClick={handleViewPollHistory}
@@ -190,7 +210,7 @@ const TeacherLandingPage = () => {
       >
         Ask Question
       </button>
-    </>
+    </div>
   );
 };
 
