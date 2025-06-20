@@ -13,22 +13,14 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        
+        {/* Teacher Routes */}
         <Route
           path="/teacher-home-page"
           element={
             <TeacherProtectedRoute>
               <TeacherLandingPage />
             </TeacherProtectedRoute>
-          }
-        />
-        <Route path="/student-home-page" element={<StudentLandingPage />} />
-
-        <Route
-          path="/poll-question"
-          element={
-            <StudentProtectedRoute>
-              <StudentPollPage />
-            </StudentProtectedRoute>
           }
         />
         <Route
@@ -45,6 +37,24 @@ function App() {
             <TeacherProtectedRoute>
               <PollHistoryPage />
             </TeacherProtectedRoute>
+          }
+        />
+        
+        {/* Student Routes */}
+        <Route
+          path="/student-home-page"
+          element={
+            <StudentProtectedRoute>
+              <StudentLandingPage />
+            </StudentProtectedRoute>
+          }
+        />
+        <Route
+          path="/poll-question"
+          element={
+            <StudentProtectedRoute>
+              <StudentPollPage />
+            </StudentProtectedRoute>
           }
         />
       </Routes>
