@@ -4,6 +4,7 @@ import io from "socket.io-client";
 import ChatPopover from "../../components/chat/ChatPopover";
 import { useNavigate } from "react-router-dom";
 import eyeIcon from "../../assets/eye.svg";
+
 let apiUrl =
   import.meta.env.VITE_NODE_ENV === "production"
     ? import.meta.env.VITE_API_BASE_URL
@@ -15,50 +16,64 @@ const TeacherPollPage = () => {
   const [pollOptions, setPollOptions] = useState([]);
   const [votes, setVotes] = useState({});
   const [totalVotes, setTotalVotes] = useState(0);
-  const navigate = new useNavigate();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    socket.on("pollCreated", (pollData) => {
+  const username = sessionStorage.getItem("username");
+  if (!username) {
+    navigate("/");
+    return;
+  }
+
+  socket.on("pollCreated", (pollData) => {
+    console.log('Received pollCreated:', pollData); // Debug log
+    if (pollData.teacherUsername === username) {
       setPollQuestion(pollData.question);
       setPollOptions(pollData.options);
       setVotes({});
-    });
+      setTotalVotes(0);
+    }
+  });
 
-    socket.on("pollResults", (updatedVotes) => {
-      setVotes(updatedVotes);
-      setTotalVotes(Object.values(updatedVotes).reduce((a, b) => a + b, 0));
-    });
+  socket.on("pollResults", (results) => {
+    console.log('Received pollResults:', results); // Debug log
+    setVotes(results.results);
+    setTotalVotes(results.totalVotes);
+  });
 
-    return () => {
-      socket.off("pollCreated");
-      socket.off("pollResults");
-    };
-  }, []);
+  return () => {
+    socket.off("pollCreated");
+    socket.off("pollResults");
+  };
+}, [navigate]);
 
   const calculatePercentage = (count) => {
     if (totalVotes === 0) return 0;
     return (count / totalVotes) * 100;
   };
+
   const askNewQuestion = () => {
     navigate("/teacher-home-page");
   };
+
   const handleViewPollHistory = () => {
     navigate("/teacher-poll-history");
   };
 
   return (
-    <>
+    <div className="teacher-poll-container">
       <button
         className="btn rounded-pill ask-question poll-history px-4 m-2"
         onClick={handleViewPollHistory}
       >
-        <img src={eyeIcon} alt=""/>
+        <img src={eyeIcon} alt="" />
         View Poll history
       </button>
       <br />
       <div className="container mt-5 w-50">
         <h3 className="mb-4 text-center">Poll Results</h3>
 
-        {pollQuestion && (
+        {pollQuestion ? (
           <>
             <div className="card">
               <div className="card-body">
@@ -108,16 +123,14 @@ const TeacherPollPage = () => {
               </button>
             </div>
           </>
-        )}
-
-        {!pollQuestion && (
+        ) : (
           <div className="text-muted">
             Waiting for the teacher to start a new poll...
           </div>
         )}
         <ChatPopover />
       </div>
-    </>
+    </div>
   );
 };
 
