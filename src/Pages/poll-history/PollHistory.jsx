@@ -16,9 +16,15 @@ const PollHistoryPage = () => {
   useEffect(() => {
     const getPolls = async () => {
       const username = sessionStorage.getItem("username");
+      if (!username) {
+      navigate("/");
+      return;
+    }
 
       try {
+        console.log('Fetching polls for:', username); // Debug log
         const response = await axios.get(`${apiUrl}/polls/${username}`);
+        console.log('Polls response:', response.data); // Debug log
         setPolls(response.data.data);
       } catch (error) {
         console.error("Error fetching polls:", error);
